@@ -1,0 +1,9 @@
+{
+    "require": {
+        "slim/slim": "^3.10"
+    },
+
+    "autoload": {
+    	"psr-0": {"Gee": "src/"}
+    }
+}
