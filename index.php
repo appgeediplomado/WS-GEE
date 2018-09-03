@@ -239,5 +239,29 @@ $app->delete('/asistentes/{asistenteId}/retroalimentacion/{trabajoId}', function
 	$this->dataAccess->removeRetroalimentacion($asistenteId, $trabajoId);
 });
 
+$app->get('/', function(Request $request, Response $response, $args) {
+	$body = "<h3>Referencias wsgee</h3>";
+	$servicios = [	'Ponentes del evento' => \Gee\Config::BASE_URL . '/ponentes/',
+					'Detalles de ponente' => \Gee\Config::BASE_URL . '/ponentes/{ponenteId}',
+					'Trabajos de ponente' => \Gee\Config::BASE_URL . '/ponentes/{ponenteId}/trabajos',
+					'Asistentes registrados' => \Gee\Config::BASE_URL . '/asistentes',
+					'Detalles de asistente' => \Gee\Config::BASE_URL . '/asistentes/{asistenteId}',
+					'Bitacora de asistentencia de asistente' => \Gee\Config::BASE_URL . '/asistentes/{asistenteId}/bitacora',
+					'Registrar asistencia de usuario (POST)' => \Gee\Config::BASE_URL . '/asistentes/{asistenteId}/registro',
+					'Bitacora de las ponencias evaluadas por un asistente' => \Gee\Config::BASE_URL . '/asistentes/{asistenteId}/retroalimentacion',
+					'Registrar evaluación del asistente a una ponencia (POST [\'calificacion\']=[1-5])' => \Gee\Config::BASE_URL . '/asistentes/{asistenteId}/retroalimentacion/{trabajoId}',
+					'Eliminar evaluación del asistente a una ponencia' => \Gee\Config::BASE_URL . '/asistentes/{asistenteId}/retroalimentacion/{trabajoId}'
+					];
+	$lista = '<ul>';					
+	foreach ($servicios as $key => $value) {
+		$lista .= '<li>'.$key.': <i>'.$value.'</i></li>';
+	}
+	$lista .= '</ul>';
+	$body.=$lista;
+	$response->getBody()->write($body);
+	return $response;
+});
+
+
 // Ejecutar la aplicación
 $app->run();
