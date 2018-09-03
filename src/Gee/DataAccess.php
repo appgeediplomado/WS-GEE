@@ -108,4 +108,26 @@ eoq;
 		$statement->bindValue(':calificacion', $calificacion);
 		$statement->execute();
 	}
+
+	public function getRetroalimentacionAsistente($asistenteId) {
+		$sql = <<<eoq
+			SELECT trabajo.titulo, retroalimentacion.calificacion
+			FROM retroalimentacion, trabajo
+			WHERE retroalimentacion.trabajoId = trabajo.id AND retroalimentacion.asistenteId = :asistenteId
+eoq;
+
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(':asistenteId', $asistenteId);
+		$statement->execute();
+
+		return $statement->fetchAll();
+	}
+
+	public function removeRetroalimentacion($asistenteId, $trabajoId) {
+		$statement = $this->pdo->prepare("DELETE FROM retroalimentacion WHERE asistenteId = :asistenteId AND trabajoId = :trabajoId");
+
+		$statement->bindValue(':asistenteId', $asistenteId, \PDO::PARAM_INT);
+		$statement->bindValue(':trabajoId', $trabajoId, \PDO::PARAM_INT);
+		$statement->execute();
+	}
 }

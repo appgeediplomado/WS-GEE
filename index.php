@@ -207,8 +207,13 @@ $app->post('/asistentes/{asistenteId}/registro', function(Request $request, Resp
 });
 
 $app->get('/asistentes/{asistenteId}/retroalimentacion', function(Request $request, Response $response, $args) {
-	$data['error'] = 'Función aún no implementada';
-	return $response->withJson($data, 501);
+	$asistenteId = $args['asistenteId'];
+	$resultados = $this->dataAccess->getRetroalimentacionAsistente($asistenteId);
+	$data = [
+		'retroalimentacion' =>  $resultados
+	];
+
+	return $response->withJson($data);
 });
 
 $app->post('/asistentes/{asistenteId}/retroalimentacion/{trabajoId}', function(Request $request, Response $response, $args) {
@@ -225,6 +230,13 @@ $app->post('/asistentes/{asistenteId}/retroalimentacion/{trabajoId}', function(R
 	];
 
 	return $response->withJson($data, 201);
+});
+
+$app->delete('/asistentes/{asistenteId}/retroalimentacion/{trabajoId}', function(Request $request, Response $response, $args) {
+	$asistenteId = $args['asistenteId'];
+	$trabajoId = $args['trabajoId'];
+
+	$this->dataAccess->removeRetroalimentacion($asistenteId, $trabajoId);
 });
 
 // Ejecutar la aplicación
