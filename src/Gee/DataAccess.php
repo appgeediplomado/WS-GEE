@@ -15,7 +15,7 @@ class DataAccess
 	}
 
 	public function getPonentes() {
-		$statement = $this->pdo->query("SELECT id, concat(nombre, ' ', apellidos) nombre, institucion FROM ponente");
+		$statement = $this->pdo->query("SELECT id, nombre, apellidos, institucion FROM ponente");
 
 		return $statement->fetchAll();
 	}
@@ -56,13 +56,13 @@ eoq;
 	}
 
 	public function getAsistentes() {
-		$statement = $this->pdo->query("SELECT id, concat(nombre, ' ', apellidos) nombre FROM asistente");
+		$statement = $this->pdo->query("SELECT id, nombre, apellidos FROM asistente");
 
 		return $statement->fetchAll();
 	}
 
 	public function getAsistente($id) {
-		$statement = $this->pdo->prepare("SELECT id, nombre, apellidos FROM asistente WHERE id = :id");
+		$statement = $this->pdo->prepare("SELECT id, nombre, apellidos, 'Oculto por seguridad' email FROM asistente WHERE id = :id");
 		$statement->bindValue(':id', $id);
 		$statement->execute();
 
@@ -75,5 +75,37 @@ eoq;
 		$statement->execute();
 
 		return $statement->fetchAll(\PDO::FETCH_COLUMN);
+	}
+
+	public function setAsistencia($asistenteId, $dia) {
+		// Buscar registro de asistencia para este día
+		$statement = $this->pdo->prepare("SELECT * FROM bitacora WHERE asistenteId = :asistenteId AND dia = :dia");
+		$statement->bindValue(':asistenteId', $asistenteId, \PDO::PARAM_INT);
+		$statement->bindValue(':dia', $dia);
+		$statement->execute();
+
+		// Si no hay registro, insertarlo ahora
+		if (!$statement->fetch()) {
+			$statement = $this->pdo->prepare("INSERT INTO bitacora (id, asistenteId, dia) VALUES(NULL, :asistenteId, :dia)");
+			$statement->bindValue(':asistenteId', $asistenteId, \PDO::PARAM_INT);
+			$statement->bindValue(':dia', $dia);
+			$statement->execute();
+		}
+
+		return $this->pdo->lastInsertId();
+	}
+
+	public function setCalificacion($asistenteId, $trabajoId, $calificacion) {
+		$sql = <<<eoq
+			INSERT INTO retroalimentacion (id, asistenteId, trabajoId, calificacion)
+			VALUES (NULL, :asistenteId, :trabajoId, :calificacion)
+			ON DUPLICATE KEY UPDATE calificacion = VALUES(calificacion)
+eoq;
+
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(':asistenteId', $asistenteId, \PDO::PARAM_INT);
+		$statement->bindValue(':trabajoId', $trabajoId, \PDO::PARAM_INT);
+		$statement->bindValue(':calificacion', $calificacion);
+		$statement->execute();
 	}
 }

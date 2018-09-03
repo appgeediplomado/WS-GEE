@@ -30,11 +30,22 @@ $container['dataAccess'] = function($c) {
 
 $app->get('/ponentes', function(Request $request, Response $response) {
 	$resultados = $this->dataAccess->getPonentes();
+	$ponentes = [];
+
+	foreach ($resultados as  $resultado) {
+		$ponente = [
+			'id' => $resultado['id'],
+			'nombre'  => $resultado['nombre'] . ' ' . $resultado['apellidos'],
+			'institucion' => $resultado['institucion']
+		];
+
+		$ponentes[] = $ponente;
+	}
 
 	$data = [
-		'total_resultados' => count($resultados),
+		'total_resultados' => count($ponentes),
 		'ponente_datos' => 'http://roman.cele.unam.mx/wsgee/ponentes/:ponenteId',
-		'ponentes' => $resultados
+		'ponentes' => $ponentes
 	];
 
 	return $response->withJson($data);
@@ -64,7 +75,7 @@ $app->get('/ponentes/{ponenteId}', function(Request $request, Response $response
 });
 
 $app->get('/ponentes/{ponenteId}/trabajos', function(Request $request, Response $response) {
-	$data['error'] = 'Función no implementada';
+	$data['error'] = 'Función aún no implementada';
 	return $response->withJson($data, 501);
 });
 
@@ -151,6 +162,16 @@ $app->get('/asistentes/{asistenteId}/bitacora', function(Request $request, Respo
 		return $response->withJson($data, 400);
 	}
 
+	$asistente = $this->dataAccess->getAsistente($id);
+
+	if (!$asistente) {
+		$data = [
+			'error' => 'Asistente no encontrado'
+		];
+
+		return $response->withJson($data, 404);
+	}
+
 	$resultado = $this->dataAccess->getBitacora($id);
 
 	$data = [
@@ -160,19 +181,51 @@ $app->get('/asistentes/{asistenteId}/bitacora', function(Request $request, Respo
 	return $response->withJson($data);
 });
 
-$app->post('/asistentes/{id}/registro', function(Request $request, Response $response, $args) {
-	$data['error'] = 'Función no implementada';
-	return $response->withJson($data, 501);
-
-/*	$asistenteId = $args['id'];
+$app->post('/asistentes/{asistenteId}/registro', function(Request $request, Response $response, $args) {
+	$asistenteId = $args['asistenteId'];
 	$fecha = date('Y-m-d');
 
 	// Valido IP
 
-	$data = $this->dataAccess->setAsistencia($asistenteId, $fecha);
+	$asistente = $this->dataAccess->getAsistente($asistenteId);
 
-	return $response->withJson($data);
-*/});
+	if (!$asistente) {
+		$data = [
+			'error' => 'Asistente no encontrado'
+		];
+
+		return $response->withJson($data, 404);
+	}
+
+	$this->dataAccess->setAsistencia($asistenteId, $fecha);
+
+	$data = [
+		'bitacora' => \Gee\Config::BASE_URL . '/asistentes/' . $asistenteId . '/bitacora'
+	];
+
+	return $response->withJson($data, 201);
+});
+
+$app->get('/asistentes/{asistenteId}/retroalimentacion', function(Request $request, Response $response, $args) {
+	$data['error'] = 'Función aún no implementada';
+	return $response->withJson($data, 501);
+});
+
+$app->post('/asistentes/{asistenteId}/retroalimentacion/{trabajoId}', function(Request $request, Response $response, $args) {
+	$asistenteId = $args['asistenteId'];
+	$trabajoId = $args['trabajoId'];
+
+	$body = $request->getParsedBody();
+	$calificacion = $body['calificacion'];
+
+	$this->dataAccess->setCalificacion($asistenteId, $trabajoId, $calificacion);
+
+	$data = [
+		'retroalimentacion' => \Gee\Config::BASE_URL . 'asistentes/' . $asistenteId . '/retroalimentacion/' . $trabajoId
+	];
+
+	return $response->withJson($data, 201);
+});
 
 // Ejecutar la aplicación
 $app->run();
