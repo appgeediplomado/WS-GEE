@@ -30,7 +30,11 @@ class DataAccess
 
 	public function getTrabajos() {
 		$sql = <<<eoq
-SELECT trabajo.id, trabajo.titulo, catModalidad.modalidad, concat(ponente.nombre, ' ', ponente.apellidos) ponente
+SELECT
+	trabajo.id, trabajo.titulo, catModalidad.modalidad,
+	concat(ponente.nombre, ' ', ponente.apellidos) nombrePonente,
+	'2018-10-02' fecha, '10:00' hora,
+	'Auditorio Rosario Castellanos' lugar
 FROM trabajo, ponente, catModalidad
 WHERE ponenteId = ponente.id and modalidadId = catModalidad.id
 eoq;
@@ -144,7 +148,7 @@ eoq;
 					'Registrar evaluación del asistente a una ponencia (POST [\'calificacion\']=[1-5])' => \Gee\Config::BASE_URL . '/asistentes/{asistenteId}/retroalimentacion/{trabajoId}',
 					'Eliminar evaluación del asistente a una ponencia' => \Gee\Config::BASE_URL . '/asistentes/{asistenteId}/retroalimentacion/{trabajoId}'
 					];
-		$lista = '<ul>';					
+		$lista = '<ul>';
 		foreach ($servicios as $key => $value) {
 			$lista .= '<li>'.$key.': <i>'.$value.'</i></li>';
 		}

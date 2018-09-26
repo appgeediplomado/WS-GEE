@@ -35,7 +35,8 @@ $app->get('/ponentes', function(Request $request, Response $response) {
 	foreach ($resultados as  $resultado) {
 		$ponente = [
 			'id' => $resultado['id'],
-			'nombre'  => $resultado['nombre'] . ' ' . $resultado['apellidos'],
+			'nombre'  => $resultado['nombre'],
+			'apellidos' => $resultado['apellidos'],
 			'institucion' => $resultado['institucion']
 		];
 
