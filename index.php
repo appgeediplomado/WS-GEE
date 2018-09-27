@@ -81,6 +81,18 @@ $app->get('/ponentes/{ponenteId}/trabajos', function(Request $request, Response 
 });
 
 $app->get('/trabajos', function(Request $request, Response $response) {
+	$fp = fopen("/home/roman/Sites/wsgee/log.txt", "w");
+	$headers = $request->getHeaders();
+	// foreach ($headers as $name => $values) {
+	//     $output .= $name . ": " . implode(", ", $values) . PHP_EOL;
+	// }
+	// fwrite($fp, $output);
+	// $header = $headers["HTTP_GEE_TIMESTAMP"].'hola';
+	// $header = $headers["HTTP_GEE_TIMESTAMP"][0];
+	$header = $request->getHeader('GEE_TIMESTAMP');
+	fwrite($fp, $header[0]);
+	fclose();
+
 	$resultados = $this->dataAccess->getTrabajos();
 
 	$data = [
@@ -141,6 +153,22 @@ $app->get('/asistentes/{asistenteId}', function(Request $request, Response $resp
 	}
 
 	$resultado = $this->dataAccess->getAsistente($id);
+
+	if (!$resultado) {
+		$data = ['error' => 'Asistente no encontrado'];
+		return $response->withJson($data, 404);
+	}
+
+	$data = [
+		'bitacora' => \Gee\Config::BASE_URL . '/asistentes/' . $resultado['id'] . '/bitacora',
+		'asistente' => $resultado
+	];
+
+	return $response->withJson($data);
+});
+
+$app->get('/asistentes/sesion/{correo}', function(Request $request, Response $response, $args) {
+	$resultado = $this->dataAccess->buscarAsistente($args['correo']);
 
 	if (!$resultado) {
 		$data = ['error' => 'Asistente no encontrado'];

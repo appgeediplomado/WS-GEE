@@ -65,8 +65,16 @@ eoq;
 	}
 
 	public function getAsistente($id) {
-		$statement = $this->pdo->prepare("SELECT id, nombre, apellidos, 'Oculto por seguridad' email FROM asistente WHERE id = :id");
+		$statement = $this->pdo->prepare("SELECT id, nombre, apellidos, 'Oculto por seguridad' correo FROM asistente WHERE id = :id");
 		$statement->bindValue(':id', $id);
+		$statement->execute();
+
+		return $statement->fetch();
+	}
+
+	public function buscarAsistente($correo) {
+		$statement = $this->pdo->prepare("SELECT id, nombre, apellidos, correo FROM asistente WHERE correo = :correo");
+		$statement->bindValue(':correo', $correo);
 		$statement->execute();
 
 		return $statement->fetch();
