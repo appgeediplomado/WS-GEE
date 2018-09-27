@@ -33,8 +33,7 @@ class DataAccess
 SELECT
 	trabajo.id, trabajo.titulo, catModalidad.modalidad,
 	concat(ponente.nombre, ' ', ponente.apellidos) nombrePonente,
-	'2018-10-02' fecha, '10:00' hora,
-	'Auditorio Rosario Castellanos' lugar
+	fecha, hora, lugar
 FROM trabajo, ponente, catModalidad
 WHERE ponenteId = ponente.id and modalidadId = catModalidad.id
 eoq;
