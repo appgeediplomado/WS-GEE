@@ -106,17 +106,22 @@ eoq;
 		return $this->pdo->lastInsertId();
 	}
 
-	public function setCalificacion($asistenteId, $trabajoId, $calificacion) {
+	public function setCalificacion($asistenteId, $trabajoId, $ponencia, $ponente, $relevancia) {
 		$sql = <<<eoq
-			INSERT INTO retroalimentacion (id, asistenteId, trabajoId, calificacion)
-			VALUES (NULL, :asistenteId, :trabajoId, :calificacion)
-			ON DUPLICATE KEY UPDATE calificacion = VALUES(calificacion)
+			INSERT INTO retroalimentacion (id, asistenteId, trabajoId, ponencia, ponente, relevancia)
+			VALUES (NULL, :asistenteId, :trabajoId, :ponencia, :ponente, :relevancia)
+			ON DUPLICATE KEY UPDATE
+				ponencia = VALUES(ponencia),
+				ponente = VALUES(ponente),
+				relevancia = VALUES(relevancia)
 eoq;
 
 		$statement = $this->pdo->prepare($sql);
 		$statement->bindValue(':asistenteId', $asistenteId, \PDO::PARAM_INT);
 		$statement->bindValue(':trabajoId', $trabajoId, \PDO::PARAM_INT);
-		$statement->bindValue(':calificacion', $calificacion);
+		$statement->bindValue(':ponencia', $ponencia);
+		$statement->bindValue(':ponente', $ponente);
+		$statement->bindValue(':relevancia', $relevancia);
 		$statement->execute();
 	}
 

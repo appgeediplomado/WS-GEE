@@ -250,9 +250,15 @@ $app->post('/asistentes/{asistenteId}/retroalimentacion/{trabajoId}', function(R
 	$trabajoId = $args['trabajoId'];
 
 	$body = $request->getParsedBody();
-	$calificacion = $body['calificacion'];
+	$ponencia = $body['ponencia'];
+	$ponente = $body['ponente'];
+	$relevancia = $body['relevancia'];
 
-	$this->dataAccess->setCalificacion($asistenteId, $trabajoId, $calificacion);
+	try {
+		$this->dataAccess->setCalificacion($asistenteId, $trabajoId, $ponencia, $ponente, $relevancia);
+	} catch (Exception $e) {
+		return $e->getMessage();
+	}
 
 	$data = [
 		'retroalimentacion' => \Gee\Config::BASE_URL . 'asistentes/' . $asistenteId . '/retroalimentacion/' . $trabajoId
