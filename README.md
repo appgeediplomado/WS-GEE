@@ -11,6 +11,7 @@ Identificadores antecedidos por : son parámetros en la URL
 * GET /trabajos - Lista de  trabajos
 * GET /trabajos/:trabajoId - Detalles de un trabajo
 * GET /asistentes - Lista de asistentes
+* GET /asistentes/sesion/:correo - Buscar un asistente por correo
 * GET /asistentes/:asistenteId - Detalles de un asistente
 * GET /asistentes/:asistenteId/bitacora - Bitácora de asistencia de un asistente
 * POST /asistentes/:asistenteId/registro - Registro de asistencia
