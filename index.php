@@ -101,9 +101,11 @@ $app->get('/trabajos/pagina/{noPagina}', function(Request $request, Response $re
 
 	$numeroPagina = $args["noPagina"];
 	$resultados = $this->dataAccess->getTrabajosPaginados($numeroPagina);
+	$totalResultados = getTotalTrabajos();
 
 	$data = [
-		'total_resultados' => count($resultados),
+		'total_resultados' => $totalResultados,
+		'numero_resultados' => count($resultados),
 		'pagina' => $numeroPagina,
 		'trabajo_detalle' => \Gee\Config::BASE_URL . '/trabajos/:trabajoId',
 		'trabajos' => $resultados
