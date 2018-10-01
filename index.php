@@ -81,22 +81,30 @@ $app->get('/ponentes/{ponenteId}/trabajos', function(Request $request, Response 
 });
 
 $app->get('/trabajos', function(Request $request, Response $response) {
-	$fp = fopen("/home/roman/Sites/wsgee/log.txt", "w");
-	$headers = $request->getHeaders();
-	// foreach ($headers as $name => $values) {
-	//     $output .= $name . ": " . implode(", ", $values) . PHP_EOL;
-	// }
-	// fwrite($fp, $output);
-	// $header = $headers["HTTP_GEE_TIMESTAMP"].'hola';
-	// $header = $headers["HTTP_GEE_TIMESTAMP"][0];
-	$header = $request->getHeader('GEE_TIMESTAMP');
-	fwrite($fp, $header[0]);
-	fclose();
+	// $headers = $request->getHeaders();
+	// $header = $request->getHeader('GEE_TIMESTAMP');
 
 	$resultados = $this->dataAccess->getTrabajos();
 
 	$data = [
 		'total_resultados' => count($resultados),
+		'trabajo_detalle' => \Gee\Config::BASE_URL . '/trabajos/:trabajoId',
+		'trabajos' => $resultados
+	];
+
+	return $response->withJson($data);
+});
+
+$app->get('/trabajos/pagina/{noPagina}', function(Request $request, Response $response, $args) {
+	// $headers = $request->getHeaders();
+	// $header = $request->getHeader('GEE_TIMESTAMP');
+
+	$numeroPagina = $args["noPagina"];
+	$resultados = $this->dataAccess->getTrabajosPaginados($numeroPagina);
+
+	$data = [
+		'total_resultados' => count($resultados),
+		'pagina' => $numeroPagina,
 		'trabajo_detalle' => \Gee\Config::BASE_URL . '/trabajos/:trabajoId',
 		'trabajos' => $resultados
 	];

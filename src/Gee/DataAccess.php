@@ -42,6 +42,29 @@ eoq;
 		return $statement->fetchAll();
 	}
 
+	public function getTotalTrabajos() {
+		$statement = $this->pdo->query("select count(id) from trabajo");
+		return $statement->fetchColumn();
+	}
+
+	public function getTrabajosPaginados($numeroPagina = 1, $longitudPagina = 20) {
+		$sqlFmt = <<<eoq
+SELECT
+	trabajo.id, trabajo.titulo, catModalidad.modalidad,
+	concat(ponente.nombre, ' ', ponente.apellidos) nombrePonente,
+	fecha, hora, lugar
+FROM trabajo, ponente, catModalidad
+WHERE ponenteId = ponente.id and modalidadId = catModalidad.id
+LIMIT %d,%d
+eoq;
+
+		$inicio = ($numeroPagina - 1) * $longitudPagina;
+		$sql = sprintf($sqlFmt, $inicio, $longitudPagina);
+		$statement = $this->pdo->query($sql);
+
+		return $statement->fetchAll();
+	}
+
 	public function getTrabajo($id) {
 		$sql = <<<eoq
 SELECT
