@@ -9,5 +9,7 @@ class Config
 	const DB_PASSWORD = 'appgee';
 	const DB_NAME = 'gee';
 	const BASE_URL = 'http://roman.cele.unam.mx/wsgee';
-	CONST CHARSET = 'UTF8';
+	const CHARSET = 'UTF8';
+	const LONGITUD_PAGINA = 15;
+
 }

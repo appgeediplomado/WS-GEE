@@ -96,17 +96,20 @@ $app->get('/trabajos', function(Request $request, Response $response) {
 });
 
 $app->get('/trabajos/pagina/{noPagina}', function(Request $request, Response $response, $args) {
-	// $headers = $request->getHeaders();
-	// $header = $request->getHeader('GEE_TIMESTAMP');
-
 	$numeroPagina = $args["noPagina"];
-	$resultados = $this->dataAccess->getTrabajosPaginados($numeroPagina);
-	$totalResultados = getTotalTrabajos();
+	$resultados = $this->dataAccess->getTrabajosPaginados($numeroPagina, \Gee\Config::LONGITUD_PAGINA);
+
+	if (count($resultados) == 0) {
+		$data = ['error' => 'Página no encontrado'];
+		return $response->withJson($data, 404);		
+	}
+
+	$totalResultados = $this->dataAccess->getTotalTrabajos();
 
 	$data = [
-		'total_resultados' => $totalResultados,
-		'numero_resultados' => count($resultados),
 		'pagina' => $numeroPagina,
+		'longitud_pagina' => \Gee\Config::LONGITUD_PAGINA,
+		'numero_paginas' => ceil($totalResultados / \Gee\Config::LONGITUD_PAGINA),
 		'trabajo_detalle' => \Gee\Config::BASE_URL . '/trabajos/:trabajoId',
 		'trabajos' => $resultados
 	];
