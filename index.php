@@ -37,7 +37,8 @@ $app->get('/ponentes', function(Request $request, Response $response) {
 			'id' => $resultado['id'],
 			'nombre'  => $resultado['nombre'],
 			'apellidos' => $resultado['apellidos'],
-			'institucion' => $resultado['institucion']
+			'institucion' => $resultado['institucion'],
+			'foto' => $resultado['foto'],
 		];
 
 		$ponentes[] = $ponente;
@@ -101,7 +102,7 @@ $app->get('/trabajos/pagina/{noPagina}', function(Request $request, Response $re
 
 	if (count($resultados) == 0) {
 		$data = ['error' => 'Página no encontrado'];
-		return $response->withJson($data, 404);		
+		return $response->withJson($data, 404);
 	}
 
 	$totalResultados = $this->dataAccess->getTotalTrabajos();

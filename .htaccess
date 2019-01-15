@@ -1,4 +1,4 @@
 RewriteEngine On
-RewriteCond %{Request_Filename} !-F
 RewriteCond %{Request_Filename} !-d
+RewriteCond %{Request_Filename} !-f
 RewriteRule ^ index.php [QSA,L]

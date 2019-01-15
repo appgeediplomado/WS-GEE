@@ -15,7 +15,7 @@ class DataAccess
 	}
 
 	public function getPonentes() {
-		$statement = $this->pdo->query("SELECT id, nombre, apellidos, institucion FROM ponente");
+		$statement = $this->pdo->query("SELECT id, nombre, apellidos, institucion, foto FROM ponente");
 
 		return $statement->fetchAll();
 	}
@@ -36,6 +36,7 @@ SELECT
 	fecha, hora, lugar
 FROM trabajo, ponente, catModalidad
 WHERE ponenteId = ponente.id and modalidadId = catModalidad.id
+LIMIT 3
 eoq;
 		$statement = $this->pdo->query($sql);
 
@@ -68,9 +69,9 @@ eoq;
 	public function getTrabajo($id) {
 		$sql = <<<eoq
 SELECT
-	trabajo.id, trabajo.titulo, catModalidad.modalidad,
-	trabajo.ponenteId, concat(ponente.nombre, ' ', ponente.apellidos) ponente,
-	sinopsis
+	trabajo.id, trabajo.titulo, sinopsis, catModalidad.modalidad,
+	trabajo.ponenteId, concat(ponente.nombre, ' ', ponente.apellidos) nombrePonente,
+	fecha, hora, lugar
 FROM trabajo, ponente, catModalidad
 WHERE ponenteId = ponente.id and modalidadId = catModalidad.id and trabajo.id = :id
 eoq;
@@ -96,7 +97,7 @@ eoq;
 	}
 
 	public function buscarAsistente($correo) {
-		$statement = $this->pdo->prepare("SELECT id, nombre, apellidos, correo FROM asistente WHERE correo = :correo");
+		$statement = $this->pdo->prepare("SELECT id, nombre, apellidos, correo, password FROM asistente WHERE correo = :correo");
 		$statement->bindValue(':correo', $correo);
 		$statement->execute();
 
